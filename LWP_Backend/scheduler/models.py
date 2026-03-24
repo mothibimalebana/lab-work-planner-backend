@@ -16,22 +16,39 @@ class Booking(models.Model):
         return self.module
 
 class Slot(models.Model):
-    slotID = models.IntegerField(primary_key=True, unique=True, editable=False)
+    id = models.IntegerField(primary_key=True, unique=True, editable=False)
     booking = models.OneToOneField(Booking, on_delete=models.CASCADE)
+    day = models.IntegerField()
+    shift = models.IntegerField()
     unavailable = models.BooleanField
-    def __str__(self):
-        return self.slotID
+    class Meta:
+        unique_together = ['day', 'shift']
+        ordering = ['day', 'shift']
 
-class Role(models.TextChoices):
-    SUPERVISOR = "Supervisor"
-    ASSISTANT = "Assistant"
+    def __str__(self):
+        return f"day ${self.day}, shift ${self.shift}"
+
+Lab_Role = [
+    ('A', 'Lab Assistant'),
+    ('S', 'Lab Supervisor')
+]
 
 class Students(models.Model):
     student_number = models.IntegerField(primary_key=True, editable=False ,unique=True)
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
-    role = models.CharField(choices=Role.choices, default=Role.ASSISTANT)
+    role = models.CharField(max_length=2, choices=Lab_Role, default=1)
     modules = models.ManyToManyField(Module)
     shifts = models.ManyToManyField(Slot)
     def __str__(self):
-        return self.student_number
+        return f"{self.student_number}"
+
+class Schedule(models.Model):
+    name = models.CharField(max_length=255)
+    matrix = models.JSONField(default=list)
+
+    def __str__(self):
+        return self.name        
+        
+
+
