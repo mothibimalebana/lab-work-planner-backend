@@ -2,46 +2,57 @@ from django.db import models
 
 # Create your models here.
 class Module(models.Model):
-    code = models.CharField(unique=True)
+    code = models.CharField(max_length=8, unique=True)
     moduleID = models.IntegerField(primary_key=True, unique=True, editable=False)
     name = models.CharField(max_length=255, unique=True)
     def __str__(self):
         return self.code
 
 class Booking(models.Model):
-    lecturer = models.CharField(max_length=255)
+    lecturer = models.CharField(max_length=255, null=True, blank=True)
     lab = models.IntegerField()
     module = models.OneToOneField(Module, on_delete=models.CASCADE)
     def __str__(self):
-        return self.module
+        return f"{self.module} in lab: {self.lab}"
 
 class Slot(models.Model):
     id = models.IntegerField(primary_key=True, unique=True, editable=False)
     booking = models.OneToOneField(Booking, on_delete=models.CASCADE)
     day = models.IntegerField()
     shift = models.IntegerField()
-    unavailable = models.BooleanField
+    unavailable = models.BooleanField(default=False)
+    blocking_modules= models.ManyToManyField(Module)
     class Meta:
         unique_together = ['day', 'shift']
         ordering = ['day', 'shift']
 
     def __str__(self):
-        return f"day ${self.day}, shift ${self.shift}"
+        return f"day {self.day}, shift {self.shift}"
 
 Lab_Role = [
     ('A', 'Lab Assistant'),
     ('S', 'Lab Supervisor')
 ]
 
-class Students(models.Model):
+
+class Student(models.Model):
     student_number = models.IntegerField(primary_key=True, editable=False ,unique=True)
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
-    role = models.CharField(max_length=2, choices=Lab_Role, default=1)
+    role = models.CharField(max_length=2, choices=Lab_Role, default='A')
     modules = models.ManyToManyField(Module)
     shifts = models.ManyToManyField(Slot)
     def __str__(self):
         return f"{self.student_number}"
+
+
+class Shift(models.Model):
+    shift_id = models.IntegerField(unique=True, primary_key=True)
+    supervisor = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='shift_supervisor', null=True, blank=True)
+    assistants = models.ManyToManyField(Student, related_name='shift_assistant', null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.shift_id}"
 
 class Schedule(models.Model):
     name = models.CharField(max_length=255)
