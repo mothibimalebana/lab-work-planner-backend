@@ -17,7 +17,7 @@ class Booking(models.Model):
 
 class Slot(models.Model):
     id = models.IntegerField(primary_key=True, unique=True, editable=False)
-    booking = models.OneToOneField(Booking, on_delete=models.CASCADE)
+    booking = models.OneToOneField(Booking, null=True, on_delete=models.SET_NULL)
     day = models.IntegerField()
     shift = models.IntegerField()
     unavailable = models.BooleanField(default=False)
