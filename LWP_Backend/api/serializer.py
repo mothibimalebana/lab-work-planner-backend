@@ -15,3 +15,8 @@ class SlotSerializer(serializers.ModelSerializer):
     class Meta:
         model = Slot
         fields = ["id", "booking", "day", "shift", "unavailable", "blocking_modules"]
+
+class StudentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Student
+        fields = ["student_number", "first_name", "last_name", "role", "modules", "shifts"]
