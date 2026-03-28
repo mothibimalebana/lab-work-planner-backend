@@ -5,3 +5,9 @@ class ModuleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Module
         fields = ["code", "moduleID", "name"]
+
+class BookingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Booking
+        fields = ["lecturer", "lab", "module"]
+
