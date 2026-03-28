@@ -2,8 +2,7 @@ from django.db import models
 
 # Create your models here.
 class Module(models.Model):
-    code = models.CharField(max_length=8, unique=True)
-    moduleID = models.IntegerField(primary_key=True, unique=True, editable=False)
+    code = models.CharField(primary_key=True, max_length=8, unique=True, editable=False)
     name = models.CharField(max_length=255, unique=True)
     def __str__(self):
         return self.code
@@ -21,7 +20,7 @@ class Slot(models.Model):
     day = models.IntegerField()
     shift = models.IntegerField()
     unavailable = models.BooleanField(default=False)
-    blocking_modules= models.ManyToManyField(Module,  null=True, blank=True)
+    blocking_modules= models.ManyToManyField(Module)
     class Meta:
         unique_together = ['day', 'shift']
         ordering = ['day', 'shift']
@@ -47,7 +46,7 @@ class Student(models.Model):
 class Shift(models.Model):
     shift_id = models.IntegerField(unique=True, primary_key=True)
     supervisor = models.ForeignKey(Student,on_delete=models.SET_NULL, related_name='shift_supervisor', null=True, blank=True)
-    assistants = models.ManyToManyField(Student, related_name='shift_assistant', null=True, blank=True)
+    assistants = models.ManyToManyField(Student, related_name='shift_assistant')
 
     def __str__(self):
         return f"slot: {self.shift_id}, supervisor: {self.supervisor}, assistants: {self.assistants}"
