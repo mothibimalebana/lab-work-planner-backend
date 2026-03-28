@@ -11,3 +11,7 @@ class BookingSerializer(serializers.ModelSerializer):
         model = Booking
         fields = ["lecturer", "lab", "module"]
 
+class SlotSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Slot
+        fields = ["id", "booking", "day", "shift", "unavailable", "blocking_modules"]
